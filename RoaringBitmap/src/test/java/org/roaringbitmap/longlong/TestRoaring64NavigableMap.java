@@ -1435,7 +1435,7 @@ public class TestRoaring64NavigableMap {
     }
   }
 
-  @Disabled(".add have a different meaning between Roaring64NavigableMap and RoaringBitmap")
+  @Disabled(".add has a different meaning between Roaring64NavigableMap and RoaringBitmap")
   @Test
   public void testDefaultBehaviorLikeRoaring_MinusOneAsInt() {
     Roaring64NavigableMap longBitmap = newDefaultCtor();
@@ -1500,5 +1500,44 @@ public class TestRoaring64NavigableMap {
     // Select does allocate some cache
     map.select(16);
     assertEquals(264, map.getLongSizeInBytes());
+  }
+
+  // https://github.com/RoaringBitmap/RoaringBitmap/issues/436
+  @Test
+  public void testSpecificCase_NPE() {
+    Roaring64NavigableMap map = newSignedBuffered();
+
+    // Size when empty
+    assertEquals(16, map.getLongSizeInBytes());
+
+    // Add values so that the underlying Map holds multiple entries
+    map.add(0);
+    map.add(2L * Integer.MAX_VALUE);
+    map.add(8L * Integer.MAX_VALUE, 8L * Integer.MAX_VALUE + 1024);
+    
+    assertEquals(3, map.getHighToBitmap().size());
+
+    // Size with multiple entries
+    assertEquals(228, map.getLongSizeInBytes());
+    
+    // Select does allocate some cache
+    map.select(16);
+    assertEquals(264, map.getLongSizeInBytes());
+  }
+  
+  // https://github.com/RoaringBitmap/RoaringBitmap/issues/437
+  @Test
+  public void shouldNotThrowIAE(){
+    long[] inputs = new long[]{5183829215128059904L};
+    long[] crossers = new long[]{4421416447812311717L, 4420658333523655893L, 4420658332008999025L};
+
+    Roaring64Bitmap referenceRB = new Roaring64Bitmap();
+    referenceRB.add(inputs);
+
+    Roaring64Bitmap crossRB = new Roaring64Bitmap();
+    crossRB.add(crossers);
+
+    //IAE
+    crossRB.and(referenceRB);
   }
 }
