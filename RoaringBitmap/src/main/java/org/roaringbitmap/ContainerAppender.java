@@ -30,7 +30,7 @@ import static org.roaringbitmap.Util.*;
  * </pre>
  */
 public class ContainerAppender<C extends WordStorage<C>,
-        T extends BitmapDataProvider & AppendableStorage<C>>
+        T extends RoaringBitmapWriter.AppendableBitmapDataProvider<C>>
         implements RoaringBitmapWriter<T> {
 
 

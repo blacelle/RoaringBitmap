@@ -14,8 +14,14 @@ public interface RoaringBitmapWriter<T extends BitmapDataProvider> extends Suppl
     return new BufferWizard();
   }
 
+  // This interface enables adding .clone in BitmapDataProvider
+  // https://stackoverflow.com/questions/33233223/generics-issue-clone-attempting-to-assign-weaker-access-privileges
+  interface AppendableBitmapDataProvider<C extends WordStorage<C>> extends BitmapDataProvider, AppendableStorage<C> {
+
+  }
+
   abstract class Wizard<C extends WordStorage<C>,
-          T extends BitmapDataProvider & AppendableStorage<C>>
+          T extends AppendableBitmapDataProvider<C>>
           implements Supplier<RoaringBitmapWriter<T>> {
 
     protected int initialCapacity = RoaringArray.INITIAL_CAPACITY;
@@ -152,8 +158,8 @@ public interface RoaringBitmapWriter<T extends BitmapDataProvider> extends Suppl
     @Override
     public RoaringBitmapWriter<T> get() {
       int capacity = initialCapacity;
-      return new ContainerAppender<>(partiallySortValues, runCompress,
-          () -> createUnderlying(capacity), containerSupplier);
+      return new ContainerAppender<C, T>(partiallySortValues, runCompress,
+              () -> createUnderlying(capacity), containerSupplier);
     }
 
     private static void sanityCheck(int count) {

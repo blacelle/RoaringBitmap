@@ -63,7 +63,7 @@ import java.util.Iterator;
  */
 public class MutableRoaringBitmap extends ImmutableRoaringBitmap
     implements Cloneable, Serializable, Iterable<Integer>, Externalizable,
-        BitmapDataProvider, AppendableStorage<MappeableContainer> {
+        RoaringBitmapWriter.AppendableBitmapDataProvider<MappeableContainer> {
   private static final long serialVersionUID = 4L; // 3L; bumped by ofk for runcontainers
 
   /**
