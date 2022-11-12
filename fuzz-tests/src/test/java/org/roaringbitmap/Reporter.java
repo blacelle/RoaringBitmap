@@ -3,6 +3,8 @@ package org.roaringbitmap;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.common.primitives.Ints;
+import org.roaringbitmap.longlong.ImmutableLongBitmapDataProvider;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +28,29 @@ public class Reporter {
       String[] base64 = new String[bitmaps.length];
       for (int i = 0; i < bitmaps.length; ++i) {
         ByteArrayDataOutput serialised = ByteStreams.newDataOutput(bitmaps[i].serializedSizeInBytes());
+        bitmaps[i].serialize(serialised);
+        base64[i] = Base64.getEncoder().encodeToString(serialised.toByteArray());
+      }
+      output.put("bitmaps", base64);
+      Path dir = Paths.get(OUTPUT_DIR);
+      if (!Files.exists(dir)) {
+        Files.createDirectory(dir);
+      }
+      Files.write(dir.resolve(testName + "-" + UUID.randomUUID() + ".json"), MAPPER.writeValueAsBytes(output));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static synchronized void report(String testName, Map<String, Object> context, Throwable error, ImmutableLongBitmapDataProvider... bitmaps) {
+    try {
+      Map<String, Object> output = new LinkedHashMap<>();
+      output.put("testName", testName);
+      output.put("error", getStackTrace(error));
+      output.putAll(context);
+      String[] base64 = new String[bitmaps.length];
+      for (int i = 0; i < bitmaps.length; ++i) {
+        ByteArrayDataOutput serialised = ByteStreams.newDataOutput(Ints.checkedCast(bitmaps[i].serializedSizeInBytes()));
         bitmaps[i].serialize(serialised);
         base64[i] = Base64.getEncoder().encodeToString(serialised.toByteArray());
       }
