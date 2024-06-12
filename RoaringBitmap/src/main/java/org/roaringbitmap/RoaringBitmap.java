@@ -49,7 +49,7 @@ import org.roaringbitmap.longlong.LongUtils;
 
 
 public class RoaringBitmap implements Cloneable, Serializable, Iterable<Integer>, Externalizable,
-    ImmutableBitmapDataProvider, BitmapDataProvider, AppendableStorage<Container> {
+    ImmutableBitmapDataProvider, RoaringBitmapWriter.AppendableBitmapDataProvider<Container> {
 
   private final class RoaringIntIterator implements PeekableIntIterator {
     private int hs = 0;

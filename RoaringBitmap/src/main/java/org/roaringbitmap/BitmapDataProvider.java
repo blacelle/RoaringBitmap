@@ -34,4 +34,9 @@ public interface BitmapDataProvider extends ImmutableBitmapDataProvider {
    * Recover allocated but unused memory.
    */
   void trim();
+
+  /**
+   * @return a deep-copy, used by {@link FastAggregation}
+   */
+  BitmapDataProvider clone();
 }

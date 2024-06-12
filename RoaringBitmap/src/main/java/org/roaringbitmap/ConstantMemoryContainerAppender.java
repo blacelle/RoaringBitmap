@@ -31,8 +31,7 @@ import static org.roaringbitmap.Util.*;
  * }
  * </pre>
  */
-public class ConstantMemoryContainerAppender<T extends BitmapDataProvider
-        & AppendableStorage<Container>> implements RoaringBitmapWriter<T> {
+public class ConstantMemoryContainerAppender<T extends RoaringBitmapWriter.AppendableBitmapDataProvider<Container>> implements RoaringBitmapWriter<T> {
 
   private final boolean doPartialSort;
   private final boolean runCompress;

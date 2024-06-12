@@ -152,7 +152,6 @@ public class ParallelAggregation {
     return new TreeMap<>(grouped);
   }
 
-
   /**
    * Computes the bitwise union of the input bitmaps
    * @param bitmaps the input bitmaps
